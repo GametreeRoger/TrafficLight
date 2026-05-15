@@ -5,6 +5,7 @@
 - Commit after meaningful units of work
 - Keep commits focused
 - Do not mix unrelated changes
+- Co-authored-by: AI Agent
 
 ## Commit Style
 
@@ -15,7 +16,7 @@ Examples:
 feat: add inventory presenter
 fix: resolve null reference in chat ui
 perf: reduce scroll allocation
-Co-authored-by: Codex <noreply@openai.com>
+
 
 ## Push Rules
 
