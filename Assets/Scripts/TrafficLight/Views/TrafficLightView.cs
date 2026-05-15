@@ -2,40 +2,40 @@
 using UnityEngine;
 using System.Collections;
 
-public class TrafficLightView : MonoBehaviour
+public class TrafficLightView : UIBase
 {
-    [SerializeField] LightView RedLight;
-    [SerializeField] LightView YellowLight;
-    [SerializeField] LightView GreenLight;
+    [SerializeField] LightView m_redLight;
+    [SerializeField] LightView m_yellowLight;
+    [SerializeField] LightView m_greenLight;
 
-    [SerializeField] float lightDuration = 5f;
+    [SerializeField] float m_lightDuration = 5f;
 
-    readonly Color disabledColor = Color.gray;
+    readonly Color m_disabledColor = Color.gray;
 
     void Start()
     {
-        StartCoroutine(RunTrafficLight());
+        StartCoroutine(runTrafficLight());
     }
 
-    IEnumerator RunTrafficLight()
+    IEnumerator runTrafficLight()
     {
         while (true)
         {
-            yield return RunLight(RedLight, Color.red);
+            yield return runLight(m_redLight, Color.red);
 
-            yield return RunLight(YellowLight, Color.yellow);
+            yield return runLight(m_yellowLight, Color.yellow);
 
-            yield return RunLight(GreenLight, Color.green);
+            yield return runLight(m_greenLight, Color.green);
         }
     }
 
-    IEnumerator RunLight(LightView activeLight, Color activeColor)
+    IEnumerator runLight(LightView activeLight, Color activeColor)
     {
-        float remainingTime = lightDuration;
+        float remainingTime = m_lightDuration;
 
         while (remainingTime > 0f)
         {
-            SetLight(activeLight, activeColor, Mathf.CeilToInt(remainingTime).ToString());
+            setLight(activeLight, activeColor, Mathf.CeilToInt(remainingTime).ToString());
 
             float waitTime = Mathf.Min(1f, remainingTime);
             yield return new WaitForSeconds(waitTime);
@@ -43,19 +43,19 @@ public class TrafficLightView : MonoBehaviour
         }
     }
 
-    void SetLight(LightView activeLight, Color activeColor, string secondText)
+    void setLight(LightView activeLight, Color activeColor, string secondText)
     {
-        ResetLight(RedLight);
-        ResetLight(YellowLight);
-        ResetLight(GreenLight);
+        resetLight(m_redLight);
+        resetLight(m_yellowLight);
+        resetLight(m_greenLight);
 
         activeLight.SetColor(activeColor);
         activeLight.SetSecond(secondText);
     }
 
-    void ResetLight(LightView light)
+    void resetLight(LightView light)
     {
-        light.SetColor(disabledColor);
+        light.SetColor(m_disabledColor);
         light.SetSecond(string.Empty);
     }
 }
