@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     static T m_instance;
     static bool m_isQuitting;
@@ -14,18 +14,20 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 return null;
             }
 
-            if (m_instance == null)
+            if (m_instance != null)
             {
-                m_instance = FindAnyObjectByType<T>();
+                return m_instance;
             }
+
+            m_instance = FindAnyObjectByType<T>();
 
             if (m_instance == null)
             {
                 GameObject singletonObject = new GameObject(typeof(T).Name);
                 m_instance = singletonObject.AddComponent<T>();
+                setupInstance(m_instance);
             }
 
-            SetupInstance(m_instance);
             return m_instance;
         }
     }
@@ -41,7 +43,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         m_instance = current;
-        SetupInstance(m_instance);
+        setupInstance(m_instance);
     }
 
     protected virtual void OnApplicationQuit()
@@ -49,7 +51,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         m_isQuitting = true;
     }
 
-    static void SetupInstance(T instance)
+    static void setupInstance(T instance)
     {
         if (instance == null)
         {

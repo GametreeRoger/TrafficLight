@@ -1,56 +1,50 @@
-
+using System;
 using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
-public class TrafficLightView : UIBase
+public class TrafficLightView : UIBase, ITrafficLightView
 {
+    [SerializeField] Button m_closeButton;
     [SerializeField] LightView m_redLight;
     [SerializeField] LightView m_yellowLight;
     [SerializeField] LightView m_greenLight;
 
-    [SerializeField] float m_lightDuration = 5f;
-
     readonly Color m_disabledColor = Color.gray;
 
-    void Start()
+    void Awake()
     {
-        StartCoroutine(runTrafficLight());
+        m_closeButton.onClick.AddListener(onClose);
     }
 
-    IEnumerator runTrafficLight()
+    public event Action OnCloseRequested;
+
+    void onClose()
     {
-        while (true)
-        {
-            yield return runLight(m_redLight, Color.red);
-
-            yield return runLight(m_yellowLight, Color.yellow);
-
-            yield return runLight(m_greenLight, Color.green);
-        }
+        OnCloseRequested?.Invoke();
     }
 
-    IEnumerator runLight(LightView activeLight, Color activeColor)
+    public void SetLight(TrafficLightPhase phase, string second)
     {
-        float remainingTime = m_lightDuration;
+        resetAllLights();
 
-        while (remainingTime > 0f)
-        {
-            setLight(activeLight, activeColor, Mathf.CeilToInt(remainingTime).ToString());
-
-            float waitTime = Mathf.Min(1f, remainingTime);
-            yield return new WaitForSeconds(waitTime);
-            remainingTime -= waitTime;
-        }
+        (LightView light, Color color) = phaseToLight(phase);
+        light.SetColor(color);
+        light.SetSecond(second);
     }
 
-    void setLight(LightView activeLight, Color activeColor, string secondText)
+    (LightView, Color) phaseToLight(TrafficLightPhase phase) => phase switch
+    {
+        TrafficLightPhase.Red    => (m_redLight,    Color.red),
+        TrafficLightPhase.Yellow => (m_yellowLight,  Color.yellow),
+        TrafficLightPhase.Green  => (m_greenLight,  Color.green),
+        _ => throw new ArgumentOutOfRangeException(nameof(phase))
+    };
+
+    void resetAllLights()
     {
         resetLight(m_redLight);
         resetLight(m_yellowLight);
         resetLight(m_greenLight);
-
-        activeLight.SetColor(activeColor);
-        activeLight.SetSecond(secondText);
     }
 
     void resetLight(LightView light)

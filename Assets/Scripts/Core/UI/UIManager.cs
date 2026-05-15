@@ -9,6 +9,16 @@ public class UIManager : Singleton<UIManager>
     readonly Dictionary<Type, UIBase> m_uiMap = new Dictionary<Type, UIBase>();
     Canvas m_canvas;
 
+    public void Close<T>() where T : UIBase
+    {
+        var uiType = typeof(T);
+
+        if (m_uiMap.TryGetValue(uiType, out var ui) && ui != null)
+        {
+            ui.Hide();
+        }
+    }
+
     public T Open<T>() where T : UIBase
     {
         T ui = GetOrCreateUI<T>();
